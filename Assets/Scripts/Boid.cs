@@ -18,8 +18,8 @@ public class Boid : MonoBehaviour
     public float banking = 0.1f;
     public float maxSpeed = 5.0f;
     public float maxForce = 10.0f;
-    
 
+    public AxisConstraints constraints;
 
     // Use this for initialization
     void Start()
@@ -44,12 +44,11 @@ public class Boid : MonoBehaviour
     public Vector3 ArriveForce(Vector3 target, float slowingDistance = 15.0f)
     {
         Vector3 toTarget = target - transform.position;
+        toTarget.y = 0;
 
         float distance = toTarget.magnitude;
         if (distance < 0.1f)
-        {
             return Vector3.zero;
-        }
         float ramped = maxSpeed * (distance / slowingDistance);
 
         float clamped = Mathf.Min(ramped, maxSpeed);
@@ -108,4 +107,10 @@ public class Boid : MonoBehaviour
             velocity *= (1.0f - (damping * Time.deltaTime));
         }
     }
+}
+
+public struct AxisConstraints {
+    public bool x;
+    public bool y;
+    public bool z;
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Path : MonoBehaviour
 {
-
     public List<Vector3> waypoints = new List<Vector3>();
 
     public int next = 0;
@@ -33,7 +32,6 @@ public class Path : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update(){    }
 
     public Vector3 NextWaypoint()
