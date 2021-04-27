@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Boid : MonoBehaviour
 {
-    List<SteeringBehaviour> behaviours = new List<SteeringBehaviour>();
+    private readonly List<SteeringBehaviour> _behaviours = new List<SteeringBehaviour>();
 
     public Vector3 force = Vector3.zero;
     public Vector3 acceleration = Vector3.zero;
@@ -31,15 +31,18 @@ public class Boid : MonoBehaviour
 
         SteeringBehaviour[] behaviours = GetComponents<SteeringBehaviour>();
         foreach (SteeringBehaviour b in behaviours)
-            this.behaviours.Add(b);
+            this._behaviours.Add(b);
     }
 
-    public Vector3 SeekForce(Vector3 target, AxisConstraints constraints)
+    public Vector3 SeekForce(Vector3 target, AxisConstraints constraints, bool ignoreStoppingDistance = true)
     {
         Vector3 desired = target - transform.position;
         desired.x = constraints.x ? 0 : desired.x;
         desired.y = constraints.y ? 0 : desired.y;
         desired.z = constraints.z ? 0 : desired.z;
+
+        if (!ignoreStoppingDistance && desired.magnitude <= stoppingDistanceUnits)
+            return Vector3.zero;
 
         desired.Normalize();
         desired *= maxSpeed;
@@ -76,7 +79,7 @@ public class Boid : MonoBehaviour
         // 4. Running sum
 
 
-        foreach (SteeringBehaviour b in behaviours)
+        foreach (SteeringBehaviour b in _behaviours)
         {
             if (b.isActiveAndEnabled)
             {
