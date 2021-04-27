@@ -103,13 +103,7 @@ public class FPSController : MonoBehaviour
 
     private void HandleInput() {
         if (Input.GetKey(quitKey))
-        {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.ExitPlaymode();
-#else
             Application.Quit();
-#endif
-        }
 
         if (Input.GetKeyDown(fireKey))
             ThrowBall();

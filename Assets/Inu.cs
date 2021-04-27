@@ -23,6 +23,7 @@ public class Inu : Boid, IAnimalBehaviour
     private AnimalState _lastState;
     public bool CanPickUpObject { get; set; }
     public TMPro.TextMeshProUGUI stateDisplay;
+    private Animator _anim;
 
     private void Start()
     {
@@ -31,13 +32,17 @@ public class Inu : Boid, IAnimalBehaviour
         arrive = GetComponent<Arrive>();
         _tailBehaviour = GetComponentInChildren<TailBehaviour>();
         _source = GetComponent<AudioSource>();
-        Idle(false);
+        _anim = GetComponentInChildren<Animator>();
+        //Idle(false);
     }
 
     void Update()
     {
         PerformForceCalculations();
         stateDisplay.text = $"{_currentState}";
+
+        _anim.SetBool("Moving", _currentState != AnimalState.Idle);
+        _anim.SetFloat("MovementMultiplier", velocity.magnitude * 0.4f);
     }
 
     private IEnumerator PlaySound(AudioClip clip, byte playCount, bool waitForEnd, float delay = 0.2f) {
@@ -131,6 +136,7 @@ public class Inu : Boid, IAnimalBehaviour
 
     public void Idle(bool performIdleAction) {
         _currentState = AnimalState.Idle;
+        arrive.enabled = false;
         if (performIdleAction)
         {
             StartCoroutine(PlaySound(borks[Random.Range(0, borks.Length)], 2, false, 0.5f));
