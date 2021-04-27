@@ -18,11 +18,17 @@ public class Boid : MonoBehaviour
     public float maxSpeed = 5.0f;
     public float maxForce = 10.0f;
 
+    protected Seek seek;
+    protected Arrive arrive;
+
     [Header("Custom Settings")]
     public float stoppingDistanceUnits;
 
-    void Start()
+    public void OnStart()
     {
+        seek = GetComponent<Seek>();
+        arrive = GetComponent<Arrive>();
+
         SteeringBehaviour[] behaviours = GetComponents<SteeringBehaviour>();
         foreach (SteeringBehaviour b in behaviours)
             this.behaviours.Add(b);
@@ -88,7 +94,7 @@ public class Boid : MonoBehaviour
         return force;
     }
 
-    void Update()
+    public void PerformForceCalculations()
     {
         force = Calculate();
         Vector3 newAcceleration = force / mass;

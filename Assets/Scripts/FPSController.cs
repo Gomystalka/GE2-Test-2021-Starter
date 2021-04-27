@@ -1,22 +1,27 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
 public class FPSController : MonoBehaviour
 {
-    public GameObject mainCamera;
     public float speed = 50.0f;
     public float lookSpeed = 150.0f;
     public bool allowPitch = true;
+    public Rigidbody ballPrefab;
+
+    [Header("Input")]
+    public KeyCode fireKey = KeyCode.Space;
+    public KeyCode quitKey = KeyCode.Escape;
+    public KeyCode sprintKey = KeyCode.LeftShift;
+
+    [Header("Throwing")]
+    public float throwStrength;
 
     private float _invcosTheta1;
+    private GameObject _camera;
     void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        if (mainCamera == null)
-            mainCamera = Camera.main.gameObject;
+        _camera = Camera.main.gameObject;
 
         Invoke(nameof(Activate), 2f);
     }
@@ -48,7 +53,7 @@ public class FPSController : MonoBehaviour
 
     void Walk(float units)
     {
-        Vector3 forward = mainCamera.transform.forward;
+        Vector3 forward = _camera.transform.forward;
         forward.y = 0; 
         forward.Normalize();
         transform.position += forward * units;
@@ -59,7 +64,7 @@ public class FPSController : MonoBehaviour
     //    transform.position += Vector3.up * units;
     //}
 
-    void Strafe(float units) => transform.position += mainCamera.transform.right * units;
+    void Strafe(float units) => transform.position += _camera.transform.right * units;
 
     private bool _active = false;
     void Activate() => _active = true;
@@ -89,7 +94,7 @@ public class FPSController : MonoBehaviour
     }
 
     private void HandleInput() {
-        if (Input.GetKey(KeyCode.Escape))
+        if (Input.GetKey(quitKey))
         {
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.ExitPlaymode();
@@ -98,7 +103,12 @@ public class FPSController : MonoBehaviour
 #endif
         }
 
-        if (Input.GetKey(KeyCode.LeftShift))
-            speed *= 5.0f;
+        if (Input.GetKeyDown(fireKey))
+            ThrowBall();
+    }
+
+    private void ThrowBall() {
+        Rigidbody rb = Instantiate(ballPrefab, transform.position, Quaternion.identity);
+        rb.AddRelativeForce(transform.forward * throwStrength, ForceMode.Impulse);
     }
 }
