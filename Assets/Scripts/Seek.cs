@@ -23,7 +23,7 @@ public class Seek : SteeringBehaviour
         }
     }
 
-    public override Vector3 Calculate() => boid.SeekForce(target, constraints);
+    public override Vector3 Calculate() => boid.SeekForce(target, constraints, false);
 
     public void Update()
     {

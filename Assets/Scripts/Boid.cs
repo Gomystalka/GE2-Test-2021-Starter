@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Boid : MonoBehaviour
+/// <summary>
+/// Boid script by Bryan Duggan modified by Tomasz Galka C18740411
+/// </summary>
+public abstract class Boid : MonoBehaviour
 {
     private readonly List<SteeringBehaviour> _behaviours = new List<SteeringBehaviour>();
 
+    [Header("Boid Settings")]
     public Vector3 force = Vector3.zero;
     public Vector3 acceleration = Vector3.zero;
     public Vector3 velocity = Vector3.zero;
@@ -23,6 +27,7 @@ public class Boid : MonoBehaviour
 
     [Header("Custom Settings")]
     public float stoppingDistanceUnits;
+    public float targetStoppingDistance;
 
     public void OnStart()
     {
@@ -31,18 +36,20 @@ public class Boid : MonoBehaviour
 
         SteeringBehaviour[] behaviours = GetComponents<SteeringBehaviour>();
         foreach (SteeringBehaviour b in behaviours)
-            this._behaviours.Add(b);
+            _behaviours.Add(b);
     }
 
-    public Vector3 SeekForce(Vector3 target, AxisConstraints constraints, bool ignoreStoppingDistance = true)
+    public Vector3 SeekForce(Vector3 target, AxisConstraints constraints, bool ignoreStoppingDistance = false)
     {
         Vector3 desired = target - transform.position;
         desired.x = constraints.x ? 0 : desired.x;
         desired.y = constraints.y ? 0 : desired.y;
         desired.z = constraints.z ? 0 : desired.z;
-
-        if (!ignoreStoppingDistance && desired.magnitude <= stoppingDistanceUnits)
+        if (!ignoreStoppingDistance && desired.magnitude <= targetStoppingDistance)
+        {
+            OnSeekTargetReached();
             return Vector3.zero;
+        }
 
         desired.Normalize();
         desired *= maxSpeed;
@@ -58,7 +65,10 @@ public class Boid : MonoBehaviour
 
         float distance = toTarget.magnitude;
         if (distance <= stoppingDistanceUnits)
+        {
+            OnArriveTargetReached();
             return Vector3.zero;
+        }
         float ramped = maxSpeed * (distance / slowingDistance);
 
         float clamped = Mathf.Min(ramped, maxSpeed);
@@ -66,8 +76,6 @@ public class Boid : MonoBehaviour
 
         return desired - velocity;
     }
-
-
     Vector3 Calculate()
     {
         force = Vector3.zero;
@@ -105,17 +113,26 @@ public class Boid : MonoBehaviour
         velocity += acceleration * Time.deltaTime;
 
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
-
+        OnVelocityCalculated(force, acceleration, velocity);
         if (velocity.magnitude > float.Epsilon)
         {
             Vector3 tempUp = Vector3.Lerp(transform.up, Vector3.up + (acceleration * banking), Time.deltaTime * 3f);
             transform.LookAt(transform.position + velocity, tempUp);
+            Debug.Log(velocity);
             if (force == Vector3.zero) return;
 
             transform.position += velocity * Time.deltaTime;
             velocity *= (1.0f - (damping * Time.deltaTime));
         }
     }
+
+    #region Events
+    protected abstract void OnSeekTargetReached();
+
+    protected abstract void OnArriveTargetReached();
+
+    protected abstract void OnVelocityCalculated(Vector3 force, Vector3 acceleration, Vector3 velocity);
+    #endregion
 }
 
 [System.Serializable]
