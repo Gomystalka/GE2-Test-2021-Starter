@@ -703,7 +703,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wagRate: 100
-  wagAmplitude: 100
+  wagAmplitude: 50
 --- !u!1 &1296423582
 GameObject:
   m_ObjectHideFlags: 0
@@ -1038,7 +1038,6 @@ GameObject:
   - component: {fileID: 1503941576}
   - component: {fileID: 1503941577}
   - component: {fileID: 1503941573}
-  - component: {fileID: 1503941572}
   - component: {fileID: 1503941574}
   - component: {fileID: 1503941575}
   m_Layer: 0
@@ -1048,19 +1047,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1503941572
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1503941570}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd1e70df60db186419c47ae907466a95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  updatesPerSecond: 5
 --- !u!114 &1503941573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1125,7 +1111,7 @@ MonoBehaviour:
   maxSpeed: 5
   maxForce: 10
   stoppingDistanceUnits: 10
-  targetStoppingDistance: 1
+  targetStoppingDistance: 2.5
   borks:
   - {fileID: 8300000, guid: 867857052f160244d9986e424e054ba1, type: 3}
   - {fileID: 8300000, guid: ebe7af9d41161724d9a89bc307eca844, type: 3}
@@ -1135,6 +1121,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: da06bc547aaadab479e7cac9ea4fa939, type: 3}
   playerTarget: {fileID: 963194228}
   ballParent: {fileID: 1296423583}
+  stateDisplay: {fileID: 60504079}
 --- !u!4 &1503941576
 Transform:
   m_ObjectHideFlags: 0

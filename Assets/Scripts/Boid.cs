@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Boid script by Bryan Duggan modified by Tomasz Galka C18740411
+/// </summary>
 public abstract class Boid : MonoBehaviour
 {
     private readonly List<SteeringBehaviour> _behaviours = new List<SteeringBehaviour>();
 
+    [Header("Boid Settings")]
     public Vector3 force = Vector3.zero;
     public Vector3 acceleration = Vector3.zero;
     public Vector3 velocity = Vector3.zero;
@@ -72,8 +76,6 @@ public abstract class Boid : MonoBehaviour
 
         return desired - velocity;
     }
-
-
     Vector3 Calculate()
     {
         force = Vector3.zero;
@@ -116,6 +118,7 @@ public abstract class Boid : MonoBehaviour
         {
             Vector3 tempUp = Vector3.Lerp(transform.up, Vector3.up + (acceleration * banking), Time.deltaTime * 3f);
             transform.LookAt(transform.position + velocity, tempUp);
+            Debug.Log(velocity);
             if (force == Vector3.zero) return;
 
             transform.position += velocity * Time.deltaTime;

@@ -1,12 +1,22 @@
 using UnityEngine;
 
 //そのスクリプトは長くないでしょ
+/// <summary>
+/// Tail Behaviour script by Tomasz Galka C18740411
+/// </summary>
 public class TailBehaviour : MonoBehaviour
 {
     public float wagRate;
     public float wagAmplitude;
+    public const float kTwoPi = Mathf.PI * 2f;
 
-    void Update() => transform.localEulerAngles = transform.localEulerAngles.ReplaceY(Mathf.Sin(Time.time * wagRate) * wagAmplitude);
+    private float _internalRate;
+
+    void Update()
+    {
+        transform.localEulerAngles = transform.localEulerAngles.ReplaceY(Mathf.Sin(_internalRate) * wagAmplitude);
+        _internalRate += kTwoPi * Time.deltaTime * wagRate * 0.5f;
+    }
 }
 
 public static class ExtensionsUwU {

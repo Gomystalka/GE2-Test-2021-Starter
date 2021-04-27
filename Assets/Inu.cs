@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Doggo Class by Tomasz Galka C18740411 using a modified version of Bryan Duggan's Boid script. 
+/// </summary>
 public class Inu : Boid, IAnimalBehaviour
 {
     [Header("SFX")]
@@ -128,8 +131,11 @@ public class Inu : Boid, IAnimalBehaviour
 
     public void Idle(bool performIdleAction) {
         _currentState = AnimalState.Idle;
-        if(performIdleAction)
+        if (performIdleAction)
+        {
             StartCoroutine(PlaySound(borks[Random.Range(0, borks.Length)], 2, false, 0.5f));
+            arrive.enabled = false;
+        }
     }
 
     protected override void OnArriveTargetReached() {
@@ -143,10 +149,7 @@ public class Inu : Boid, IAnimalBehaviour
             PickupObject(seek.targetGameObject.transform);
     }
 
-    protected override void OnVelocityCalculated(Vector3 force, Vector3 acceleration, Vector3 velocity)
-    {
-        _tailBehaviour.wagRate = velocity.magnitude;
-    }
+    protected override void OnVelocityCalculated(Vector3 force, Vector3 acceleration, Vector3 velocity) => _tailBehaviour.wagRate = velocity.magnitude;
 }
 
 public interface IAnimalBehaviour {

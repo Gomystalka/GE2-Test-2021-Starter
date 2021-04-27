@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// FPSController script by Bryan Duggan modified by Tomasz Galka C18740411
+/// </summary>
 public class FPSController : MonoBehaviour
 {
     public float speed = 50.0f;
