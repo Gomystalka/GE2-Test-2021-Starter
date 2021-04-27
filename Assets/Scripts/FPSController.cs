@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class FPSController : MonoBehaviour
 {
@@ -17,11 +19,14 @@ public class FPSController : MonoBehaviour
 
     private float _invcosTheta1;
     private GameObject _camera;
+    private IAnimalBehaviour[] _doubutsuTachi;
+
     void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         _camera = Camera.main.gameObject;
+        _doubutsuTachi = FindObjectsOfType<Inu>();
 
         Invoke(nameof(Activate), 2f);
     }
@@ -109,6 +114,19 @@ public class FPSController : MonoBehaviour
 
     private void ThrowBall() {
         Rigidbody rb = Instantiate(ballPrefab, transform.position, Quaternion.identity);
+        foreach (IAnimalBehaviour animal in _doubutsuTachi)
+        {
+            animal.Bork();
+            animal.Seek(rb.transform, true);
+            if(animal is Inu inu)
+                StartCoroutine(DelayPickupLogic(3f, inu));
+        }
         rb.AddRelativeForce(transform.forward * throwStrength, ForceMode.Impulse);
+    }
+
+    private IEnumerator DelayPickupLogic(float delay, Inu inu) {
+        inu.CanPickUpObject = false;
+        yield return new WaitForSeconds(delay);
+        inu.CanPickUpObject = true;
     }
 }
