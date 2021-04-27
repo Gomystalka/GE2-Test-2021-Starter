@@ -27,9 +27,7 @@ public class Path : MonoBehaviour
         waypoints.Clear();
         int count = transform.childCount;
         for (int i = 0; i < count; i++)
-        {
             waypoints.Add(transform.GetChild(i).position);
-        }
     }
 
     void Update(){    }

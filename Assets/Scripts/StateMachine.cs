@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class State
@@ -12,29 +11,25 @@ public abstract class State
 
 public class StateMachine : MonoBehaviour
 {
-
     public State currentState;
     public State globalState;
     public State previousState;
 
-    private IEnumerator coroutine;
+    private IEnumerator _coroutine;
 
     public int updatesPerSecond = 5;
-    // Use this for initialization
     void Start() { }
 
     public void ChangeStateDelayed(State newState, float delay)
     {
-        coroutine = ChangeStateCoRoutine(newState, delay);
-        StartCoroutine(coroutine);
+        _coroutine = ChangeStateCoRoutine(newState, delay);
+        StartCoroutine(_coroutine);
     }
 
     public void CancelDelayedStateChange()
     {
-        if (coroutine != null)
-        {
-            StopCoroutine(coroutine);
-        }
+        if (_coroutine != null)
+            StopCoroutine(_coroutine);
     }
 
     IEnumerator ChangeStateCoRoutine(State newState, float delay)
@@ -43,10 +38,7 @@ public class StateMachine : MonoBehaviour
         ChangeState(newState);
     }
 
-    public void RevertToPreviousState()
-    {
-        ChangeState(previousState);
-    }
+    public void RevertToPreviousState() => ChangeState(previousState);
 
     public void ChangeState(State newState)
     {
@@ -64,12 +56,9 @@ public class StateMachine : MonoBehaviour
     void Update()
     {
         if (globalState != null)
-        {
             globalState.Think();
-        }
+
         if (currentState != null)
-        {
             currentState.Think();
-        }
     }
 }

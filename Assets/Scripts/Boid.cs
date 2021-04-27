@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Boid : MonoBehaviour
@@ -19,35 +18,37 @@ public class Boid : MonoBehaviour
     public float maxSpeed = 5.0f;
     public float maxForce = 10.0f;
 
-    public AxisConstraints constraints;
+    [Header("Custom Settings")]
+    public float stoppingDistanceUnits;
 
-    // Use this for initialization
     void Start()
     {
-
         SteeringBehaviour[] behaviours = GetComponents<SteeringBehaviour>();
-
         foreach (SteeringBehaviour b in behaviours)
-        {
             this.behaviours.Add(b);
-        }
     }
 
-    public Vector3 SeekForce(Vector3 target)
+    public Vector3 SeekForce(Vector3 target, AxisConstraints constraints)
     {
         Vector3 desired = target - transform.position;
+        desired.x = constraints.x ? 0 : desired.x;
+        desired.y = constraints.y ? 0 : desired.y;
+        desired.z = constraints.z ? 0 : desired.z;
+
         desired.Normalize();
         desired *= maxSpeed;
         return desired - velocity;
     }
 
-    public Vector3 ArriveForce(Vector3 target, float slowingDistance = 15.0f)
+    public Vector3 ArriveForce(Vector3 target, AxisConstraints constraints, float slowingDistance = 15.0f)
     {
         Vector3 toTarget = target - transform.position;
-        toTarget.y = 0;
+        toTarget.x = constraints.x ? 0 : toTarget.x;
+        toTarget.y = constraints.y ? 0 : toTarget.y;
+        toTarget.z = constraints.z ? 0 : toTarget.z;
 
         float distance = toTarget.magnitude;
-        if (distance < 0.1f)
+        if (distance <= stoppingDistanceUnits)
             return Vector3.zero;
         float ramped = maxSpeed * (distance / slowingDistance);
 
@@ -87,8 +88,6 @@ public class Boid : MonoBehaviour
         return force;
     }
 
-
-    // Update is called once per frame
     void Update()
     {
         force = Calculate();
@@ -100,8 +99,9 @@ public class Boid : MonoBehaviour
 
         if (velocity.magnitude > float.Epsilon)
         {
-            Vector3 tempUp = Vector3.Lerp(transform.up, Vector3.up + (acceleration * banking), Time.deltaTime * 3.0f);
+            Vector3 tempUp = Vector3.Lerp(transform.up, Vector3.up + (acceleration * banking), Time.deltaTime * 3f);
             transform.LookAt(transform.position + velocity, tempUp);
+            if (force == Vector3.zero) return;
 
             transform.position += velocity * Time.deltaTime;
             velocity *= (1.0f - (damping * Time.deltaTime));
@@ -109,6 +109,7 @@ public class Boid : MonoBehaviour
     }
 }
 
+[System.Serializable]
 public struct AxisConstraints {
     public bool x;
     public bool y;

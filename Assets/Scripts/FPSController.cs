@@ -8,20 +8,17 @@ public class FPSController : MonoBehaviour
     public GameObject mainCamera;
     public float speed = 50.0f;
     public float lookSpeed = 150.0f;
-
     public bool allowPitch = true;
 
-    public GUIStyle style;
-    // Use this for initialization
+    private float _invcosTheta1;
     void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         if (mainCamera == null)
-        {
             mainCamera = Camera.main.gameObject;
-        }
-        Invoke("Activate", 2);
+
+        Invoke(nameof(Activate), 2f);
     }
 
     void Yaw(float angle)
@@ -30,18 +27,16 @@ public class FPSController : MonoBehaviour
         transform.rotation = rot * transform.rotation;
     }
 
-    void Roll(float angle)
-    {
-        Quaternion rot = Quaternion.AngleAxis(angle, Vector3.forward);
-        transform.rotation = rot * transform.rotation;
-    }
-
-    float invcosTheta1;
+    //void Roll(float angle)
+    //{
+    //    Quaternion rot = Quaternion.AngleAxis(angle, Vector3.forward);
+    //    transform.rotation = rot * transform.rotation;
+    //}
 
     void Pitch(float angle)
     {        
         float theshold = 0.95f;
-        if ((angle > 0 && invcosTheta1 < -theshold) || (angle < 0 && invcosTheta1 > theshold))
+        if ((angle > 0 && _invcosTheta1 < -theshold) || (angle < 0 && _invcosTheta1 > theshold))
         {
             return;
         }
@@ -59,62 +54,51 @@ public class FPSController : MonoBehaviour
         transform.position += forward * units;
     }
 
-    void Fly(float units)
-    {
-        transform.position += Vector3.up * units;
-    }
+    //void Fly(float units)
+    //{
+    //    transform.position += Vector3.up * units;
+    //}
 
-    void Strafe(float units)
-    {
-        transform.position += mainCamera.transform.right * units;
-            
-    }
+    void Strafe(float units) => transform.position += mainCamera.transform.right * units;
 
-    bool active = false;
+    private bool _active = false;
+    void Activate() => _active = true;
 
-    void Activate()
-    {
-        active = true;
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        if (!active)
-        {
-            return;
-        }
-        //Cursor.lockState = CursorLockMode.Confined;
+        if (!_active) return;
   
         float mouseX, mouseY;
         float speed = this.speed;
 
-        invcosTheta1 = Vector3.Dot(transform.forward, Vector3.up);
+        _invcosTheta1 = Vector3.Dot(transform.forward, Vector3.up);
 
-        float runAxis = 0; // Input.GetAxis("Run Axis");
-
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
-
-        if (Input.GetKey(KeyCode.LeftShift) || runAxis != 0)
-        {
-            speed *= 5.0f;
-        }
+        HandleInput();
 
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
 
         Yaw(mouseX * lookSpeed * Time.deltaTime);
         if (allowPitch)
-        {
             Pitch(-mouseY * lookSpeed * Time.deltaTime);
-        }
 
         float contWalk = Input.GetAxis("Vertical");
         float contStrafe = Input.GetAxis("Horizontal");
         Walk(contWalk * speed * Time.deltaTime);
         Strafe(contStrafe * speed * Time.deltaTime);
+    }
+
+    private void HandleInput() {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.ExitPlaymode();
+#else
+            Application.Quit();
+#endif
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift))
+            speed *= 5.0f;
     }
 }

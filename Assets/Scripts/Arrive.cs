@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Arrive : SteeringBehaviour
 {
@@ -11,16 +7,11 @@ public class Arrive : SteeringBehaviour
 
     public GameObject targetGameObject = null;
 
-    public override Vector3 Calculate()
-    {
-        return boid.ArriveForce(targetPosition, slowingDistance);
-    }
+    public override Vector3 Calculate() => boid.ArriveForce(targetPosition, constraints, slowingDistance);
 
     public void Update()
     {
         if (targetGameObject != null)
-        {
             targetPosition = targetGameObject.transform.position;
-        }
     }
 }
